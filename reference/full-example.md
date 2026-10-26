@@ -7,7 +7,7 @@ description: A complete script that uses every element.
 Copy this into your executor to see every element in action.
 
 ```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_NAME/YOUR_REPO/main/DummyKawaii_Midnight.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Realestkai/uilib/refs/heads/main/sylex"))()
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -130,6 +130,6 @@ Misc:ColorPicker({
 
 Misc:Code({
     Title = "Loader",
-    Code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_NAME/YOUR_REPO/main/DummyKawaii_Midnight.lua"))()',
+    Code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/Realestkai/uilib/refs/heads/main/sylex"))()',
 })
 ```

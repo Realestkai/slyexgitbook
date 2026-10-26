@@ -32,11 +32,11 @@ It ships with two themes, **Dark** and **Midnight**, and players can switch betw
 ## Quick look
 
 ```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_NAME/YOUR_REPO/main/DummyKawaii_Midnight.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Realestkai/uilib/refs/heads/main/sylex"))()
 
 local Window = Library:Window({
-    Title = "My Hub",
-    Theme = "Midnight",
+    Title = "Sylex",
+    Theme = "Dark",
     Config = { Keybind = Enum.KeyCode.LeftControl },
     CloseUIButton = { Enabled = true, Text = "Open" },
 })

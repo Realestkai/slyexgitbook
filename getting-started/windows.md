@@ -6,10 +6,10 @@ description: Set up the main window that holds your tabs.
 
 ```lua
 local Window = Library:Window({
-    Title = "My Hub",
+    Title = "Sylex",
     Desc = "v1.0.0",
     Icon = "door-open",
-    Theme = "Midnight",
+    Theme = "Dark",
     Config = {
         Keybind = Enum.KeyCode.LeftControl,
         Size = UDim2.new(0, 530, 0, 400),

@@ -16,7 +16,6 @@ local Window = Library:Window({
     },
     CloseUIButton = {
         Enabled = true,
-        Text = "Open",
     },
     ConfigSaving = {
         Folder = "MyHub",

@@ -26,7 +26,6 @@ local Window = Library:Window({
     },
     CloseUIButton = {
         Enabled = true,
-        Text = "Sylex",
     },
     ConfigSaving = {
         Folder = "SylexHub",

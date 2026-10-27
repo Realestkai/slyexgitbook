@@ -1,50 +1,59 @@
 ---
-description: A toggle that's flipped with a rebindable key.
+description: Rebindable keys, either as an on/off switch or a plain trigger.
 ---
 
 # Keybinds
 
-A keybind is a toggle with a key box next to it. Pressing the key, or clicking the row, flips it on and off. Clicking the key box lets the player choose a new key.
+A keybind row has a key box on the right. Clicking the key box lets the player press a new key, and **Escape** cancels.
+
+## Toggle mode (default)
+
+The key flips the row on and off, like a toggle.
 
 ```lua
-local Keybind = Tab:Keybind({
-    Title = "Keybind Example",
-    Desc = "Click the key to rebind",
-    Key = Enum.KeyCode.E,
+local Fly = Tab:Keybind({
+    Title = "Fly",
+    Key = Enum.KeyCode.F,
     Value = false,
+    Flag = "Fly",
     Callback = function(Key, Value)
-        -- Key   is the current Enum.KeyCode
         -- Value is true or false
     end,
 })
 ```
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `Title` | string | `"null"` | |
-| `Desc` | string | `""` | |
-| `Image` | string / number | `""` | |
-| `Key` | `Enum.KeyCode` | `E` | Starting key. |
-| `Value` | boolean | `false` | Starting on/off state. |
-| `Callback` | `function(Key, Value)` | — | See below. |
+## Press mode
 
-## When the callback runs
-
-| Event | Runs? |
-| --- | --- |
-| Element created | Yes, once |
-| Player presses the key | Yes, after flipping the value |
-| Player picks a new key | Yes, with the new key |
-| `SetKey` is called | Yes |
-| Player **clicks** the row | **No.** The value flips but the callback doesn't run. |
-
-{% hint style="warning" %}
-The key also fires while the player is typing in chat or a textbox. If that matters, check `UserInputService:GetFocusedTextBox()` inside your callback.
-{% endhint %}
-
-## Update a keybind
+There's no switch: the callback just runs on every press. This is useful for one-off actions.
 
 ```lua
-Keybind:SetKey(Enum.KeyCode.F)  -- runs the callback
-Keybind:SetValue(true)          -- doesn't run the callback
+Tab:Keybind({
+    Title = "Teleport to mouse",
+    Key = Enum.KeyCode.T,
+    Mode = "Press",
+    Callback = function(Key)
+        -- runs every time T is pressed
+    end,
+})
 ```
+
+## Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `Key` | `Enum.KeyCode` | `E` | Starting key. |
+| `Value` | boolean | `false` | Starting on/off state (toggle mode). |
+| `Mode` | `"Toggle"` / `"Press"` | `"Toggle"` | See above. |
+| `Callback` | `function(Key, Value)` | — | Runs on key press, row click, rebind and `Set`. |
+
+Key presses are ignored while the player is typing in chat or any textbox.
+
+## Methods
+
+```lua
+Fly:SetKey(Enum.KeyCode.G)          -- runs the callback
+Fly:Set(true)                       -- runs the callback
+Fly:Get()                           -- { Key = Enum.KeyCode.G, Value = true }
+```
+
+Keybinds show up in the [keybind list overlay](../customisation/overlays.md#keybind-list).

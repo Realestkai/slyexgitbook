@@ -1,53 +1,84 @@
 ---
-description: Sections, labels and code blocks.
+description: Labels, paragraphs, dividers, progress bars, images and code blocks.
 ---
 
-# Text elements
+# Text and display elements
 
-## Section
+For sections, see [Tabs and sections](../getting-started/tabs.md#sections).
 
-A heading that groups the elements below it.
+## Label
+
+A read-only row with a title and an optional description.
 
 ```lua
-local Section = Tab:Section({
-    Title = "Movement",
+local Status = Tab:Label({
+    Title = "Status: Idle",
+    Desc = "Updates every second",
 })
 
-Section:SetTitle("Movement Settings")
+Status:SetTitle('Status: <font color="#4868D6">Running</font>')
+Status:SetDesc("Started 5s ago")
 ```
 
 ***
 
-## Label
+## Paragraph
 
-A read-only row with a title and an optional description. Useful for status text, credits or instructions.
+A label meant for longer text. The content wraps over as many lines as it needs.
 
 ```lua
-local Label = Tab:Label({
-    Title = "Status: Idle",
-    Desc = "Updates every second",
-    Image = "",
+local About = Tab:Paragraph({
+    Title = "How it works",
+    Content = "Turn on Auto Farm, pick a target, and leave the game running.\nThe counter below updates after every run.",
 })
+
+About:SetContent("New text")
 ```
 
-| Option | Type | Default |
-| --- | --- | --- |
-| `Title` | string | `"null"` |
-| `Desc` | string | `""` |
-| `Image` | string / number | `""` |
+***
 
-### Update a label
+## Divider
+
+A thin line between elements.
 
 ```lua
-Label:SetTitle("Status: Running")
-Label:SetDesc("Started 5s ago")
-Label:SetVisible(true)
+Tab:Divider()
 ```
 
-Labels support RichText, so you can colour parts of the text:
+***
+
+## Progress bar
+
+Shows progress towards a maximum. It's display-only, so it isn't saved in configs.
 
 ```lua
-Label:SetTitle('Status: <font color="#4868D6">Running</font>')
+local Progress = Tab:ProgressBar({
+    Title = "Fossils this session",
+    Max = 50,
+    Value = 0,
+    Suffix = "fossils", -- leave out to show a percentage
+})
+
+Progress:Increment()     -- +1
+Progress:Increment(5)    -- +5
+Progress:Set(20)
+Progress:SetMax(100)
+```
+
+***
+
+## Image
+
+```lua
+local Banner = Tab:Image({
+    Image = 111362591084511,
+    Height = 150,
+    ScaleType = "Crop", -- "Crop", "Fit", "Stretch"
+    CornerRadius = 6,
+})
+
+Banner:SetImage("rbxassetid://123456")
+Banner:SetHeight(200)
 ```
 
 ***
@@ -59,24 +90,11 @@ A syntax-highlighted Lua block with line numbers and a **Copy** button.
 ```lua
 local Code = Tab:Code({
     Title = "Loader",
-    Code = 'print("Hello World")',
+    Code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/Realestkai/uilib/refs/heads/main/sylex.lua"))()',
 })
-```
 
-| Option | Type | Default |
-| --- | --- | --- |
-| `Title` | string | `"null"` |
-| `Code` | string | `'-- print("Hello World")'` |
-
-The block grows to fit the code and scrolls sideways for long lines.
-
-### Update a code block
-
-```lua
-Code:SetTitle("New title")
 Code:SetCode('print("Updated")')
+Code:GetCode()
 ```
 
-{% hint style="info" %}
-The Copy button uses the executor's `setclipboard`. In plain Studio it throws an error.
-{% endhint %}
+Multi-line strings and `--[[ block comments ]]` are highlighted properly. The Copy button uses the executor's `setclipboard` (or `toclipboard`). If neither exists, it prints a warning instead of erroring.

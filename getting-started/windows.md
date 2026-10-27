@@ -6,10 +6,10 @@ description: Set up the main window that holds your tabs.
 
 ```lua
 local Window = Library:Window({
-    Title = "Sylex",
+    Title = "My Hub",
     Desc = "v1.0.0",
-    Icon = "door-open",
-    Theme = "Dark",
+    Theme = "Midnight",
+    Search = true,
     Config = {
         Keybind = Enum.KeyCode.LeftControl,
         Size = UDim2.new(0, 530, 0, 400),
@@ -18,39 +18,47 @@ local Window = Library:Window({
         Enabled = true,
         Text = "Open",
     },
+    ConfigSaving = {
+        Folder = "MyHub",
+        AutoSave = true,
+        FileName = "default",
+    },
 })
 ```
 
 ## Options
 
+Every option is optional.
+
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `Title` | string | `"null"` | Name shown in the top bar. |
-| `Desc` | string | `""` | Small subtitle under the title. Hidden when empty. |
-| `Icon` | string / number | `"door-open"` | An icon name from the library's icon set, or an asset ID. |
-| `Theme` | string | `"Dark"` | `"Dark"` or `"Midnight"`. Unknown names fall back to `"Dark"`. |
-| `Config` | table | **required** | Window settings (see below). |
-| `CloseUIButton` | table | **required** | Floating open/close button (see below). |
+| `Desc` | string | `""` | Small subtitle under the title. |
+| `Icon` | string / number | `"sylex"` | The Sylex logo by default. Pass an icon name or an asset ID to use something else. |
+| `Theme` | string | `"Dark"` | Any [built-in theme](../customisation/themes.md) such as `"Midnight"`, or one added with `AddTheme`. |
+| `Search` | boolean | `false` | Adds a search box to the top of every tab. Tabs can override this. |
+| `Scale` | `"Auto"` / number | `"Auto"` | `"Auto"` shrinks the window to fit small screens such as phones. Pass a number like `0.8` for a fixed scale. |
+| `SaveWindowState` | boolean | `true` | Remembers the window's position and size between runs. |
+| `Config` | table | `{}` | `Keybind` and `Size`, see below. |
+| `CloseUIButton` | table | disabled | A floating open/close button for mobile players, see below. |
+| `ConfigSaving` | table | `{}` | Where configs go and whether to autosave. See [Flags and configs](../state/flags-and-configs.md). |
 
 ### `Config`
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Keybind` | `Enum.KeyCode` | `LeftControl` | Hides and shows the window. Ignored while a textbox is focused. |
-| `Size` | `UDim2` | `UDim2.new(0, 530, 0, 400)` | Starting window size. |
+| `Keybind` | `Enum.KeyCode` | `LeftControl` | Hides and shows the window. Ignored while typing in a textbox. |
+| `Size` | `UDim2` | `530 × 400` | Starting size. |
 
 ### `CloseUIButton`
-
-A small draggable button that toggles the window, mainly for mobile players who have no keyboard.
 
 | Option | Type | Description |
 | --- | --- | --- |
 | `Enabled` | boolean | Show the button. |
-| `Text` | string | Label on the button. |
+| `Image` | string / number / `false` | Image on the button. Defaults to the Sylex logo. Pass an asset ID to use your own, or `false` to show `Text` instead. |
+| `Text` | string | Label used when there's no image. Defaults to `"Open"`. |
 
-{% hint style="danger" %}
-`Config` and `CloseUIButton` must both be passed, even if they're empty tables. Leaving either out throws an error.
-{% endhint %}
+The Sylex logo is downloaded once and cached in `Sylex/assets`. On executors without `getcustomasset`, the button falls back to `Text`.
 
 ## What the player can do
 
@@ -60,27 +68,31 @@ A small draggable button that toggles the window, mainly for mobile players who 
 | Drag the bottom-right corner | Resize (minimum 450 × 220) |
 | First top-bar button | Hide the window (same as the keybind) |
 | Second top-bar button | Maximise / restore |
-| ✕ button | Asks to confirm, then destroys the whole UI |
-| Theme dropdown in the top bar | Switch between Dark and Midnight |
+| ✕ button | Asks to confirm, then [unloads](../state/unloading.md) the UI |
 
-The first time the window is hidden, a notification tells the player which key brings it back.
+Any open dropdown or colour picker closes when the window is moved, resized, hidden or switched to another tab.
 
 ## Window methods
 
-### Pick the starting tab
-
 ```lua
-Window:SelectTab(2) -- opens the second tab on load
+Window:SelectTab(2)                       -- open the 2nd tab (works before or after load)
+Window:Line()                             -- divider between tabs in the sidebar
+Window:Toggle()                           -- hide / show
+Window:IsVisible()                        -- true when shown
+Window:SetKeybind(Enum.KeyCode.RightShift)
+Window:GetKeybind()
+Window:SetTheme("Midnight")
+Window:GetTheme()
+Window:SetAccent(Color3.fromRGB(255, 90, 140))
+Window:Destroy()                          -- same as Library:Unload()
 ```
 
-Call this right after creating your tabs. Out-of-range numbers fall back to tab 1.
+The window also has:
 
-### Add a divider between tabs
+* `Notify` and `Dialog`: see [Notifications](../feedback/notifications.md) and [Dialogs](../feedback/dialogs.md).
+* `SaveConfig`, `LoadConfig`, `DeleteConfig` and `ListConfigs`: see [Flags and configs](../state/flags-and-configs.md).
+* `SettingsTab`, `Watermark` and `KeybindList`: see the [Customisation](../customisation/settings-tab.md) pages.
 
-```lua
-Window:Tab({ Title = "Main", Icon = "house" })
-Window:Line()
-Window:Tab({ Title = "Settings", Icon = "settings" })
-```
-
-The window object also has `Notify` and `Dialog`. See [Notifications](../feedback/notifications.md) and [Dialogs](../feedback/dialogs.md).
+{% hint style="info" %}
+The library doesn't show any notification of its own. To tell players which key opens the menu, send one with `Window:Notify`.
+{% endhint %}

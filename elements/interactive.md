@@ -4,41 +4,26 @@ description: Buttons, toggles, sliders, dropdowns, textboxes and color pickers.
 
 # Interactive elements
 
-Every element takes `Title` and, optionally, `Desc` (a smaller line underneath) and `Image` (an icon on the left). `Title` and `Desc` support [RichText](https://create.roblox.com/docs/ui/rich-text).
-
-Most elements return an object you can update later. All of them have `SetTitle`, `SetDesc` and `SetVisible`.
-
-```lua
-Element:SetTitle("New title")
-Element:SetDesc("New description")
-Element:SetVisible(false)
-```
+All elements also take the [shared options](shared.md) (`Flag`, `Tooltip`, `Desc`, `Image`) and have the shared methods (`Get`, `Set`, `SetVisible`, `Destroy`, `SetTitle`, `SetDesc`).
 
 ***
 
 ## Button
 
 ```lua
-Tab:Button({
-    Title = "Button Example",
+local Button = Tab:Button({
+    Title = "Teleport to spawn",
     Desc = "Runs once per click",
-    Image = "",
     Callback = function()
-        -- runs when the button is pressed
+        -- runs when pressed
     end,
 })
 ```
 
-| Option | Type | Default |
-| --- | --- | --- |
-| `Title` | string | `"null"` |
-| `Desc` | string | `""` |
-| `Image` | string / number | `""` |
-| `Callback` | `function()` | — |
-
-{% hint style="warning" %}
-`Button` doesn't return an object, so you can't change its title after creating it.
-{% endhint %}
+```lua
+Button:SetCallback(function() print("new action") end)
+Button:Fire()          -- run the callback from code
+```
 
 ***
 
@@ -46,29 +31,16 @@ Tab:Button({
 
 ```lua
 local Toggle = Tab:Toggle({
-    Title = "Toggle Example",
-    Desc = "",
+    Title = "Auto Farm",
     Value = false,
+    Flag = "AutoFarm",
     Callback = function(Value)
         -- Value is true or false
     end,
 })
-```
 
-| Option | Type | Default |
-| --- | --- | --- |
-| `Title` | string | `"null"` |
-| `Desc` | string | `""` |
-| `Image` | string / number | `""` |
-| `Value` | boolean | `false` |
-| `Callback` | `function(Value: boolean)` | — |
-
-The callback runs once right after the toggle is created, with its starting value.
-
-### Update a toggle
-
-```lua
-Toggle:SetValue(true) -- also runs the callback
+Toggle:Set(true)
+print(Toggle:Get())
 ```
 
 ***
@@ -77,11 +49,13 @@ Toggle:SetValue(true) -- also runs the callback
 
 ```lua
 local Slider = Tab:Slider({
-    Title = "Slider Example",
-    Min = 0,
+    Title = "WalkSpeed",
+    Min = 16,
     Max = 100,
-    Value = 50,
+    Value = 16,
     Rounding = 0,
+    Suffix = "studs",
+    Flag = "WalkSpeed",
     Callback = function(Value)
         -- Value is a number between Min and Max
     end,
@@ -90,24 +64,45 @@ local Slider = Tab:Slider({
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Title` | string | `"null"` | |
-| `Desc` | string | `""` | |
-| `Image` | string / number | `""` | |
 | `Min` | number | `0` | Lowest value. |
 | `Max` | number | `100` | Highest value. |
-| `Value` | number | `Min + 1` | Starting value. |
+| `Value` | number | `Min` | Starting value. |
 | `Rounding` | number | `2` | Decimal places. `0` gives whole numbers. |
-| `Callback` | `function(Value: number)` | — | Runs on every change, while dragging too. |
+| `Suffix` | string | none | Shown after the number, e.g. `"studs"`. |
+| `Callback` | `function(Value)` | — | Runs whenever the value changes. Dragging only fires it when the number actually changes. |
 
-Players can drag the bar or type a number into the box next to it.
-
-### Update a slider
+Players can drag the bar or type a number into the box.
 
 ```lua
-Slider:SetValue(75)  -- clamped to Min/Max, runs the callback
+Slider:Set(75)       -- clamped to Min/Max
 Slider:SetMin(10)
 Slider:SetMax(200)
 ```
+
+***
+
+## Range slider
+
+Two handles that pick a minimum and a maximum.
+
+```lua
+local Range = Tab:RangeSlider({
+    Title = "Price range",
+    Min = 0,
+    Max = 1000,
+    Value = { 100, 500 },
+    Rounding = 0,
+    Flag = "PriceRange",
+    Callback = function(Low, High)
+        print(Low, High)
+    end,
+})
+
+Range:Set({ 200, 800 })
+local low, high = table.unpack(Range:Get())
+```
+
+Clicking the bar grabs whichever handle is closer.
 
 ***
 
@@ -115,73 +110,72 @@ Slider:SetMax(200)
 
 ```lua
 local Dropdown = Tab:Dropdown({
-    Title = "Dropdown Example",
-    List = { "Option 1", "Option 2", "Option 3" },
-    Value = "Option 1",
-    Multi = false,
+    Title = "Mode",
+    List = { "Easy", "Normal", "Hard" },
+    Value = "Normal",
+    Flag = "Mode",
     Callback = function(Value)
-        -- single: Value is a string
-        -- multi:  Value is a table of strings
+        print(Value) -- "Normal"
     end,
 })
 ```
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Title` | string | `"null"` | |
-| `Desc` | string | `""` | |
-| `Image` | string / number | `""` | |
 | `List` | `{string}` | `{}` | The options. |
-| `Value` | string, or `{string}` when `Multi` | `List[1]` | What's selected at the start. |
+| `Value` | string, or `{string}` when multi | first option (single), nothing (multi) | Starting selection. |
 | `Multi` | boolean | `false` | Allow more than one selection. |
-| `Callback` | function | — | See below. |
+| `Callback` | function | — | Single: `Callback(string)`. Multi: `Callback({string})`. |
 
-* **Single:** `Callback(Value: string)`
-* **Multi:** `Callback(Values: {string})`, for example `{ "Red", "Blue" }`
+The open list has a search box.
 
-The list has a built-in search box.
-
-### Multi-select example
+### Multi-select
 
 ```lua
-Tab:Dropdown({
+local Teams = Tab:Dropdown({
     Title = "Teams",
     List = { "Red", "Green", "Blue" },
     Value = { "Red", "Blue" },
     Multi = true,
     Callback = function(Values)
-        print(table.concat(Values, ", "))
+        print(table.concat(Values, ", ")) -- always a list, in the order picked
+    end,
+})
+
+Teams:Set({ "Green" })
+```
+
+### Changing the options
+
+```lua
+Dropdown:Refresh({ "A", "B", "C" })    -- replace the list, keeping any selection that still exists
+Dropdown:Add("D")                      -- add one
+Dropdown:Clear("A")                    -- remove one
+Dropdown:Clear({ "B", "C" })           -- remove several
+Dropdown:Clear()                       -- remove all
+Dropdown:GetOptions()                  -- { "D", ... }
+```
+
+`Refresh` only runs the callback if a selected option was removed. `Add` and `Clear` never run it.
+
+***
+
+## Player dropdown
+
+A dropdown of player names that updates itself as players join and leave.
+
+```lua
+local Target = Tab:PlayerDropdown({
+    Title = "Target",
+    IncludeSelf = false,
+    Flag = "Target",
+    Callback = function(Name)
+        print("Targeting", Name)
     end,
 })
 ```
 
-### Change the options
-
-```lua
-Dropdown:Add("Option 4")                 -- add one option
-Dropdown:Clear("Option 2")               -- remove one option
-Dropdown:Clear({ "Option 1", "Option 3" }) -- remove several
-Dropdown:Clear()                         -- remove everything
-```
-
-Refresh a list by clearing it and adding again:
-
-```lua
-Dropdown:Clear()
-for _, player in ipairs(game.Players:GetPlayers()) do
-    Dropdown:Add(player.Name)
-end
-```
-
-### Set the selection
-
-```lua
-Dropdown:SetValue("Option 2") -- runs the callback
-```
-
-{% hint style="warning" %}
-On a **multi** dropdown, `SetValue` selects just that one option, and its callback receives `{ ["Option 2"] = true }` instead of a list. See [Known quirks](../reference/known-quirks.md).
-{% endhint %}
+It takes all the Dropdown options except `List`, plus `IncludeSelf` (default `true`). By default it selects you, or the first player in the list when `IncludeSelf` is false. Pass `Multi = true` to pick several players.
 
 ***
 
@@ -189,32 +183,29 @@ On a **multi** dropdown, `SetValue` selects just that one option, and its callba
 
 ```lua
 local Textbox = Tab:Textbox({
-    Title = "Textbox Example",
+    Title = "Message",
     Placeholder = "Type here...",
     Value = "",
     ClearText = false,
+    Flag = "Message",
     Callback = function(Text)
-        -- Text is the string the player typed
+        print(Text)
     end,
 })
 ```
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `Title` | string | — | |
-| `Desc` | string | `""` | |
-| `Image` | string / number | `""` | |
 | `Value` | string | `""` | Starting text. |
 | `Placeholder` | string | `"Paste Your Text"` | Grey hint text. |
-| `ClearText` | boolean | `false` | Despite the name, `true` **keeps** the text when the player clicks the box, and `false` clears it. `ClearTextOnFocus` is an alias. |
-| `Callback` | `function(Text: string)` | — | Runs when the box loses focus, but only if it isn't empty. |
-
-### Update a textbox
+| `ClearText` | boolean | `false` | `true` clears the box each time it's clicked. `ClearTextOnFocus` is an alias. |
+| `Numeric` | boolean | `false` | Only accept numbers. The callback receives a `number`. |
+| `Callback` | `function(Text)` | — | Runs when the box loses focus, if it isn't empty. |
 
 ```lua
-Textbox:SetValue("Hello")          -- doesn't run the callback
+Textbox:Set("Hello")                 -- runs the callback
 Textbox:SetPlaceholderText("Name...")
-Textbox:SetClearTextOnFocus(true)  -- same inverted meaning as ClearText
+Textbox:SetClearTextOnFocus(true)
 ```
 
 ***
@@ -223,32 +214,23 @@ Textbox:SetClearTextOnFocus(true)  -- same inverted meaning as ClearText
 
 ```lua
 local ColorPicker = Tab:ColorPicker({
-    Title = "Color Picker",
+    Title = "ESP Color",
     Value = Color3.fromRGB(72, 104, 214),
+    Flag = "ESPColor",
     Callback = function(R, G, B)
         local color = Color3.fromRGB(R, G, B)
     end,
 })
 ```
 
-| Option | Type | Default |
-| --- | --- | --- |
-| `Title` | string | — |
-| `Desc` | string | `""` |
-| `Image` | string / number | `""` |
-| `Value` | `Color3` | white |
-| `Callback` | `function(R, G, B)` | — |
-
 {% hint style="info" %}
-The callback gets **three numbers from 0 to 255**, not a `Color3`. Use `Color3.fromRGB(R, G, B)` to build one.
+The callback gets **three numbers from 0 to 255**. `ColorPicker:Get()` and `Library.Flags` give you a `Color3`.
 {% endhint %}
 
 Clicking the swatch opens a popup with a saturation/value square, a hue bar, and Hex and R, G, B boxes.
 
-### Update a color picker
-
 ```lua
-ColorPicker:SetValue({ R = 255, G = 0, B = 0 })
+ColorPicker:Set(Color3.fromRGB(255, 0, 0))
+ColorPicker:Set("#FF0000")
+ColorPicker:Set({ R = 255, G = 0, B = 0 })   -- missing keys keep their value
 ```
-
-`SetValue` takes a table of 0–255 values. Missing keys keep their current value.

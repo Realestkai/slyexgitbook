@@ -4,20 +4,22 @@ description: A clean, themeable UI library for Roblox scripts.
 
 # Introduction
 
-**Dummy Kawaii** is a UI library for Roblox. It gives you a draggable, resizable window with tabs and a full set of elements: buttons, toggles, sliders, dropdowns, textboxes, keybinds, color pickers, code blocks, notifications and dialogs.
-
-It ships with two themes, **Dark** and **Midnight**, and players can switch between them live from the dropdown in the window's top bar.
+**Sylex UI** is a UI library for Roblox scripts. It gives you a draggable, resizable window with tabs, a full set of elements, notifications, dialogs, themes and config saving.
 
 ## What's included
 
 | Feature | Details |
 | --- | --- |
-| Window | Draggable top bar, resize handle, maximise, hide, close-with-confirm |
-| Tabs | Icon + title tabs in a scrolling sidebar, with dividers |
-| Elements | Button, Toggle, Slider, Dropdown (single and multi), Textbox, Keybind, Color Picker, Label, Section, Code |
-| Feedback | Toast notifications and two-button dialogs |
-| Themes | Dark and Midnight (midnight-blue-to-black gradient), switchable at runtime |
-| Mobile | A floating "open" button for touch players, toggleable per script |
+| Window | Draggable, resizable, maximise, hide, close-with-confirm; remembers its position and size |
+| Tabs | Icon + title tabs, dividers, optional per-tab search, collapsible sections |
+| Elements | Button, Toggle, Slider, Range Slider, Dropdown (single and multi), Player Dropdown, Textbox, Keybind, Color Picker, Label, Paragraph, Section, Divider, Progress Bar, Image, Code |
+| Element API | Every element has `Get`, `Set`, `SetVisible`, `Destroy`, plus `Flag` and `Tooltip` options |
+| Saving | Flags, save/load/delete configs, autoload, autosave |
+| Feedback | Typed notifications (info, success, warning, error) and dialogs with any number of buttons and an optional input |
+| Themes | Ten built in, add your own at runtime, change the accent colour |
+| Extras | Ready-made settings tab, watermark (FPS and ping), keybind list overlay |
+| Mobile | Floating open button and automatic scaling on small screens |
+| Clean unload | `Library:Unload()` disconnects everything and removes the UI |
 
 ## Get started
 
@@ -32,21 +34,24 @@ It ships with two themes, **Dark** and **Midnight**, and players can switch betw
 ## Quick look
 
 ```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Realestkai/uilib/refs/heads/main/sylex"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Realestkai/uilib/refs/heads/main/sylex.lua"))()
 
 local Window = Library:Window({
-    Title = "Sylex",
-    Theme = "Dark",
+    Title = "My Hub",
+    Theme = "Midnight",
     Config = { Keybind = Enum.KeyCode.LeftControl },
-    CloseUIButton = { Enabled = true, Text = "Open" },
 })
 
 local Main = Window:Tab({ Title = "Main", Icon = "house" })
 
 Main:Toggle({
     Title = "Hello",
+    Flag = "Hello",
     Callback = function(Value)
         print("Toggle is now", Value)
     end,
 })
+
+Window:SettingsTab()
+Library:LoadConfig()
 ```

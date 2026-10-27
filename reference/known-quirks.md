@@ -4,59 +4,38 @@ description: Behaviour worth knowing about before you build on the library.
 
 # Known quirks
 
-These are current behaviours of the library, not mistakes in your script. Each one comes with a workaround.
+Most of the v1 quirks are fixed (see the [changelog](changelog.md)). These remain, mostly by design.
 
-## Callbacks run on creation
+## Callbacks run once on creation
 
-`Toggle`, `Slider`, `Keybind`, `ColorPicker` and `Textbox` (when it has a starting `Value`) run their callback once, a moment after they're created. Write callbacks so running them with the starting value is harmless.
-
-## Button has no return value
-
-`Tab:Button` returns nothing, so you can't call `SetTitle` or `SetVisible` on it. If you need a button you can change later, use a `Label` for the text next to a `Button`, or rebuild the tab.
-
-## Multi-dropdown `SetValue`
-
-On a `Multi = true` dropdown, `SetValue("X")` replaces the whole selection with just `"X"`, and the callback receives `{ X = true }` instead of `{ "X" }`. When clicked normally, the callback receives a list. To handle both shapes:
+Toggles, sliders, dropdowns with a value, keybinds, colour pickers and textboxes with a starting value run their callback once, a moment after they're created. This keeps your variables in sync with the UI. Write callbacks so running them with the starting value is harmless. For example, only show a notification when the value actually changes:
 
 ```lua
-Callback = function(Values)
-    local list = {}
-    for k, v in pairs(Values) do
-        table.insert(list, type(k) == "string" and k or v)
-    end
-    -- use list
-end
+local running = false
+Tab:Toggle({
+    Title = "Auto Farm",
+    Callback = function(v)
+        local changed = v ~= running
+        running = v
+        if changed then
+            Window:Notify({ Title = v and "Started" or "Stopped" })
+        end
+    end,
+})
 ```
 
-## Textbox `ClearText` is inverted
+## `Clear` and `Add` don't run the dropdown callback
 
-`ClearText = true` **keeps** the text when the box is clicked, and `false` (the default) clears it. The same goes for `SetClearTextOnFocus`.
+`Dropdown:Clear()` and `Dropdown:Add()` change the options silently. Use `Dropdown:Refresh(list)` when you want the callback to hear about a removed selection.
 
-## Keybind ignores chat focus
+## Color picker callbacks get numbers
 
-A keybind's key fires even while the player is typing in chat. Guard against it:
+The callback receives `R, G, B` from 0 to 255, while `Get()` and `Library.Flags` give a `Color3`. This was kept so v1 scripts keep working.
 
-```lua
-local UIS = game:GetService("UserInputService")
+## Notifications belong to the last window
 
-Callback = function(Key, Value)
-    if UIS:GetFocusedTextBox() then return end
-    -- ...
-end
-```
+`Library:Notify` sends to the most recently created window. With a single window, which is the normal case, this doesn't matter.
 
-## Clicking a keybind row skips the callback
+## Loops are yours to stop
 
-Clicking the keybind row flips its value but doesn't run the callback. Only key presses, rebinding and `SetKey` do.
-
-## Notify yields
-
-`Window:Notify` waits about 0.15 seconds before it returns. Wrap it in `task.spawn` when you don't want to wait.
-
-## `Config` and `CloseUIButton` are required
-
-`Library:Window` errors if either table is missing. Pass `{}` when you don't need any settings, plus `CloseUIButton = { Enabled = false, Text = "" }`.
-
-## Global names
-
-The library defines globals such as `Library`, `SaveTheme`, `tw`, `click` and `background`. Avoid using those names for your own globals in the same environment.
+`Library:Unload()` disconnects everything the library made, but it can't stop loops your script started. Check `Library.Unloaded` or use `Library:OnUnload`. See [Unloading](../state/unloading.md).

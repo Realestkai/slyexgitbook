@@ -1,27 +1,20 @@
 ---
-description: A confirm/cancel overlay on top of the window.
+description: A prompt on top of the window with buttons and an optional text input.
 ---
 
 # Dialogs
 
-A dialog darkens the window and shows a question with two buttons. Either button closes the dialog after running its callback.
+A dialog darkens the window and asks a question. Pressing any button runs that button's callback and closes the dialog.
 
 ```lua
 Window:Dialog({
     Title = "Reset all settings?",
-    Button1 = {
-        Title = "Confirm",
-        Color = Color3.fromRGB(0, 188, 0),
-        Callback = function()
-            -- runs when Confirm is pressed
-        end,
-    },
-    Button2 = {
-        Title = "Cancel",
-        Color = Color3.fromRGB(226, 39, 6),
-        Callback = function()
-            -- optional
-        end,
+    Content = "This can't be undone.",
+    Buttons = {
+        { Title = "Reset", Color = Color3.fromRGB(226, 39, 6), Callback = function()
+            -- reset here
+        end },
+        { Title = "Cancel" },
     },
 })
 ```
@@ -29,19 +22,45 @@ Window:Dialog({
 | Option | Type | Description |
 | --- | --- | --- |
 | `Title` | string | The question. RichText supported. |
-| `Button1` | table | Left button. **Required.** |
-| `Button2` | table | Right button. **Required.** |
+| `Content` | string | Optional smaller text under the title. |
+| `Buttons` | table | Any number of buttons, left to right. Leave it out to get a single **OK** button. Pass `{}` for no buttons (close it from code). |
+| `Input` | table | Optional text box: `{ Placeholder = "...", Value = "..." }`. |
 
-### Button table
+### Button
 
 | Option | Type | Default |
 | --- | --- | --- |
 | `Title` | string | `"null"` |
-| `Color` | `Color3` | green for `Button1`, red for `Button2` |
-| `Callback` | `function()` | does nothing |
+| `Color` | `Color3` | dark grey |
+| `Callback` | `function(InputText)` | does nothing |
+
+## With a text input
+
+When `Input` is set, every button's callback receives what the player typed.
+
+```lua
+Window:Dialog({
+    Title = "Name this config",
+    Input = { Placeholder = "my-config" },
+    Buttons = {
+        { Title = "Save", Color = Color3.fromRGB(0, 188, 0), Callback = function(Text)
+            Library:SaveConfig(Text)
+        end },
+        { Title = "Cancel" },
+    },
+})
+```
+
+## Closing from code
+
+```lua
+local dialog = Window:Dialog({ Title = "Working...", Buttons = {} })
+task.wait(3)
+dialog.Close()
+```
 
 {% hint style="info" %}
-Only one dialog can be open at a time. Calling `Dialog` while one is showing does nothing.
-{% endhint %}
+Only one dialog can be open at a time. Calling `Dialog` while one is showing does nothing and returns `nil`.
 
-The window's own ✕ button uses this same dialog to ask before destroying the UI.
+The older `Button1` / `Button2` format still works.
+{% endhint %}

@@ -1,10 +1,24 @@
 ---
-description: A complete script that uses every feature.
+description: A complete script that uses every feature, ready to copy as a starting point.
 ---
 
 # Full example
 
+Copy this as the starting point for a new script. It shows:
+
+* a window with Premium from the Discord role, config saving and the mobile open button
+* free features, options that only appear when a feature is on (`DependsOn`), and Premium-only features
+* a locked "coming soon" element
+* every element type, dialogs and notifications
+* the settings tab
+* loops that stop cleanly when the UI is unloaded
+
+Each part is explained in the [step-by-step guides](../guides/how-to.md).
+
 ```lua
+--// Sylex UI: full example script
+--// Copy this as a starting point. Every section is explained in the docs.
+
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Realestkai/uilib/refs/heads/main/sylex.lua"))()
 
 local Players = game:GetService("Players")
@@ -15,77 +29,108 @@ local function getHumanoid()
     return character:WaitForChild("Humanoid")
 end
 
+--// 1. Window
 local Window = Library:Window({
-    Title = "Sylex Hub",
+    Title = "Sylex",
     Desc = "Example script",
     Theme = "Midnight",
-    Search = true,
+    Search = true,                     -- search box at the top of every tab
+
+    -- Premium from the Discord role (players link once with /link)
+    PremiumCheck = "https://sylex-premium.sylex.workers.dev/tier",
+
     Config = {
-        Keybind = Enum.KeyCode.LeftAlt,
+        Keybind = Enum.KeyCode.LeftAlt, -- hides / shows the window
         Size = UDim2.new(0, 550, 0, 440),
     },
     CloseUIButton = {
-        Enabled = true,
+        Enabled = true,                -- floating logo button for mobile players
     },
     ConfigSaving = {
-        Folder = "SylexHub",
+        Folder = "SylexExample",       -- one folder per script
         AutoSave = true,
     },
+
+    -- Debug = true,                   -- turn on while developing, off before shipping
 })
 
+--// 2. Tabs
 local Main = Window:Tab({ Title = "Main", Icon = "house" })
 local Player = Window:Tab({ Title = "Player", Icon = "user" })
 Window:Line()
 local Misc = Window:Tab({ Title = "Misc", Icon = "settings" })
 
--- Main
-Main:Section({ Title = "Welcome" })
+--// 3. Main tab: a free feature, its options, and Premium features
+Main:Section({ Title = "Farming" })
 
 Main:Paragraph({
     Title = "Hello, " .. LocalPlayer.DisplayName,
     Content = "Press Left Alt to hide or show this window.\nYour settings save automatically.",
 })
 
-local farming = false
 Main:Toggle({
     Title = "Auto Farm",
     Flag = "AutoFarm",
     Tooltip = "Farms while you're AFK",
     Callback = function(Value)
-        -- the callback also runs once on load; only notify on a real change
-        if Value == farming then return end
-        farming = Value
-        Window:Notify({
-            Title = "Auto Farm",
-            Desc = Value and "Started." or "Stopped.",
-            Type = Value and "Success" or "Info",
-            Time = 3,
-        })
+        print("Auto Farm:", Value)
     end,
 })
 
-local Progress = Main:ProgressBar({ Title = "Session progress", Max = 10, Suffix = "runs" })
+-- Only shown while Auto Farm is on
+Main:Slider({
+    Title = "Farm speed",
+    Min = 1, Max = 10, Value = 5, Rounding = 0,
+    Flag = "FarmSpeed",
+    DependsOn = "AutoFarm",
+})
 
+-- Shown only for one dropdown value
 Main:Dropdown({
     Title = "Mode",
     List = { "Easy", "Normal", "Hard" },
     Value = "Normal",
     Flag = "Mode",
+})
+Main:Toggle({
+    Title = "Hard-mode helper",
+    Flag = "HardHelper",
+    DependsOn = { Flag = "Mode", Value = "Hard" },
+})
+
+Main:Section({ Title = "Premium" })
+
+-- Locked with a gold "Premium only" for Freemium players
+Main:Toggle({
+    Title = "Auto Collect",
+    Flag = "AutoCollect",
+    Premium = true,
     Callback = function(Value)
-        print("Mode:", Value)
+        -- also runs with false if the player's Premium ends while the script is open
+        print("Auto Collect:", Value)
     end,
 })
 
-Main:PlayerDropdown({
-    Title = "Target",
-    IncludeSelf = false,
-    Flag = "Target",
-    Callback = function(Name)
-        print("Target:", Name)
+Main:Button({
+    Title = "Collect Everything",
+    Premium = true,
+    PremiumReason = "Premium: one-click collect",
+    Callback = function()
+        Window:Notify({ Title = "Collected!", Type = "Success", Time = 3 })
     end,
 })
 
--- Player
+-- Locked from code until you unlock it
+local Event = Main:Button({
+    Title = "Event Teleport",
+    Locked = true,
+    LockReason = "Coming soon",
+})
+-- later: Event:Unlock()
+
+local Progress = Main:ProgressBar({ Title = "Session progress", Max = 10, Suffix = "runs" })
+
+--// 4. Player tab
 Player:Section({ Title = "Movement" })
 
 Player:Slider({
@@ -117,36 +162,46 @@ Player:RangeSlider({
     end,
 })
 
--- Misc
+Player:PlayerDropdown({
+    Title = "Target",
+    IncludeSelf = false,
+    Flag = "Target",
+})
+
+--// 5. Misc tab
 Misc:Textbox({
     Title = "Message",
     Placeholder = "Type something...",
     Flag = "Message",
-    Callback = function(Text)
-        print("Textbox:", Text)
-    end,
 })
 
 Misc:ColorPicker({
     Title = "ESP Color",
     Value = Color3.fromRGB(72, 104, 214),
     Flag = "ESPColor",
-    Callback = function(R, G, B)
-        print("Color:", R, G, B)
-    end,
 })
 
 Misc:Divider()
 
-Misc:Code({
-    Title = "Loader",
-    Code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/Realestkai/uilib/refs/heads/main/sylex.lua"))()',
+Misc:Button({
+    Title = "Ask first",
+    Callback = function()
+        Window:Dialog({
+            Title = "Reset WalkSpeed?",
+            Buttons = {
+                { Title = "Reset", Color = Color3.fromRGB(226, 39, 6), Callback = function()
+                    Library.Options.WalkSpeed:Set(16)
+                end },
+                { Title = "Cancel" },
+            },
+        })
+    end,
 })
 
--- Settings tab: theme, accent, menu key, overlays, configs, unload
+--// 6. Settings tab: theme, accent, menu key, configs, sharing, Link Discord, unload
 Window:SettingsTab()
 
--- Stop our loops when the UI is unloaded
+--// 7. Your loops: always stop when the UI is unloaded
 task.spawn(function()
     while not Library.Unloaded do
         if Library.Flags.AutoFarm then
@@ -156,16 +211,14 @@ task.spawn(function()
     end
 end)
 
+Library:OnPremiumChanged(function(isPremium)
+    print("Tier:", isPremium and "Premium" or "Freemium")
+end)
+
 Library:OnUnload(function()
     getHumanoid().WalkSpeed = 16
 end)
 
--- Load saved settings last, after every element exists
+--// 8. Load saved settings last, after every element exists
 Library:LoadConfig()
-
-Window:Notify({
-    Title = '<font color="#4868D6">Sylex</font>',
-    Desc = "Press <b>Left Alt</b> to hide the menu.",
-    Time = 8,
-})
 ```

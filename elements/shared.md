@@ -15,6 +15,10 @@ These options work on every element:
 | `Image` | string / number | Icon on the left (an icon name or an asset ID). |
 | `Flag` | string | Registers the element so its value is in `Library.Flags` and gets saved in configs. See [Flags and configs](../state/flags-and-configs.md). |
 | `Tooltip` | string | Text shown next to the cursor while hovering the element. |
+| `Locked` | boolean | Start the element locked. See [Locking](locking.md). |
+| `LockReason` | string | Text shown on the lock. Defaults to `"Locked"`. |
+| `Premium` | boolean | Locked for Freemium users. See [Freemium and Premium](../state/premium.md). |
+| `DependsOn` | string / table | Only show the element while another flag is on. See [Locking](locking.md). |
 
 ```lua
 Tab:Toggle({
@@ -33,6 +37,9 @@ Element:SetVisible(false)   -- hide (the space it took up collapses too)
 Element:Destroy()           -- remove it for good
 Element.Type                -- "Toggle", "Slider", "Dropdown", ...
 Element.Instance            -- the element's root Frame
+Element:Lock("Reason")      -- grey it out and block clicks (see Locking)
+Element:Unlock()
+Element:IsLocked()
 ```
 
 Elements that show a title also have:

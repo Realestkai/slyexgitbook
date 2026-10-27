@@ -19,9 +19,24 @@ description: A clean, themeable UI library for Roblox scripts.
 | Themes | Ten built in, add your own at runtime, change the accent colour |
 | Extras | Ready-made settings tab, watermark (FPS and ping), keybind list overlay |
 | Mobile | Floating open button and automatic scaling on small screens |
+| Locking | `Lock` / `Unlock` any element, and `DependsOn` to show options only when a feature is on |
+| Premium | `Premium = true` locks features for Freemium players; Premium is given automatically from the Discord role |
+| Profile card | The player's avatar, display name and tier in the sidebar |
+| Sharing | Players share settings as a config code |
+| Debug mode | Prints flag changes, config activity and full error tracebacks |
 | Clean unload | `Library:Unload()` disconnects everything and removes the UI |
 
 ## Get started
+
+New here? Start with the **step-by-step guides**, then copy the **full example** as a starting point.
+
+{% content-ref url="guides/how-to.md" %}
+[how-to.md](guides/how-to.md)
+{% endcontent-ref %}
+
+{% content-ref url="reference/full-example.md" %}
+[full-example.md](reference/full-example.md)
+{% endcontent-ref %}
 
 {% content-ref url="getting-started/loading-the-library.md" %}
 [loading-the-library.md](getting-started/loading-the-library.md)
@@ -37,8 +52,9 @@ description: A clean, themeable UI library for Roblox scripts.
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Realestkai/uilib/refs/heads/main/sylex.lua"))()
 
 local Window = Library:Window({
-    Title = "My Hub",
+    Title = "Sylex",
     Theme = "Midnight",
+    PremiumCheck = "https://sylex-premium.sylex.workers.dev/tier",
     Config = { Keybind = Enum.KeyCode.LeftControl },
 })
 
@@ -51,6 +67,8 @@ Main:Toggle({
         print("Toggle is now", Value)
     end,
 })
+
+Main:Toggle({ Title = "Premium feature", Flag = "PremiumFeature", Premium = true })
 
 Window:SettingsTab()
 Library:LoadConfig()

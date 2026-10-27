@@ -2,6 +2,11 @@
 
 * [Introduction](README.md)
 
+## Guides
+
+* [Step-by-step guides](guides/how-to.md)
+* [Full example](reference/full-example.md)
+
 ## Getting started
 
 * [Loading the library](getting-started/loading-the-library.md)
@@ -11,6 +16,7 @@
 ## Elements
 
 * [Shared element methods](elements/shared.md)
+* [Locking and DependsOn](elements/locking.md)
 * [Interactive elements](elements/interactive.md)
 * [Keybinds](elements/keybinds.md)
 * [Text and display elements](elements/text.md)
@@ -23,6 +29,7 @@
 ## Saving and state
 
 * [Flags and configs](state/flags-and-configs.md)
+* [Freemium and Premium](state/premium.md)
 * [Unloading](state/unloading.md)
 
 ## Customisation
@@ -33,6 +40,6 @@
 
 ## Reference
 
-* [Full example](reference/full-example.md)
 * [Changelog and upgrading](reference/changelog.md)
 * [Known quirks](reference/known-quirks.md)
+* [Debug mode](reference/debug-mode.md)

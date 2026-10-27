@@ -72,6 +72,27 @@ Library:Window({
 
 Autosave waits one second after the last change before writing. It only starts after the first `LoadConfig` or `SaveConfig` call, so the starting values your elements report on creation never overwrite a saved config.
 
+## Sharing configs
+
+Players can share their settings as a single line of text that starts with `SYLEX1:`. The [settings tab](../customisation/settings-tab.md) has buttons for this, or you can call it yourself:
+
+```lua
+local code = Library:ExportConfig()   -- returns the code and copies it to the clipboard
+Library:ImportConfig(code)            -- true if it worked, false if the code is invalid
+```
+
+Importing works like `LoadConfig`. Flags the code doesn't mention are left alone, and Premium features stay locked for Freemium users.
+
+## Reacting to a flag
+
+```lua
+local stop = Library:OnFlagChanged("AutoFarm", function(value)
+    print("Auto Farm:", value)
+end)
+```
+
+See [Locking and DependsOn](../elements/locking.md) for showing or locking elements based on a flag.
+
 ## What gets saved
 
 | Element | Saved as |

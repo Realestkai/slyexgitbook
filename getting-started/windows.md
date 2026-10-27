@@ -37,6 +37,11 @@ Every option is optional.
 | `Search` | boolean | `false` | Adds a search box to the top of every tab. Tabs can override this. |
 | `Scale` | `"Auto"` / number | `"Auto"` | `"Auto"` shrinks the window to fit small screens such as phones. Pass a number like `0.8` for a fixed scale. |
 | `SaveWindowState` | boolean | `true` | Remembers the window's position and size between runs. |
+| `Premium` | boolean | `false` | The user's tier. See [Freemium and Premium](../state/premium.md). |
+| `PremiumCheck` | string | none | URL of a tier server; sets Premium automatically. See [Freemium and Premium](../state/premium.md). |
+| `PremiumRefresh` | number / `false` | `30` | Seconds between Premium re-checks while the script runs (minimum 15). `false` checks only once. |
+| `Profile` | boolean | `true` | Shows the avatar, display name and tier at the bottom of the sidebar. |
+| `Debug` | boolean | `false` | Turns on [debug mode](../reference/debug-mode.md). |
 | `Config` | table | `{}` | `Keybind` and `Size`, see below. |
 | `CloseUIButton` | table | disabled | A floating open/close button for mobile players, see below. |
 | `ConfigSaving` | table | `{}` | Where configs go and whether to autosave. See [Flags and configs](../state/flags-and-configs.md). |

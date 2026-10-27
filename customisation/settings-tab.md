@@ -15,6 +15,8 @@ Call it after your other tabs so it sits at the bottom of the sidebar. It create
 | Interface | Theme dropdown, accent colour picker, menu keybind |
 | Overlays | Watermark toggle, keybind list toggle |
 | Configuration | Config name box, saved-configs dropdown, Save / Load / Set as Autoload / Delete buttons |
+| Premium | Link Discord, Check Premium Again (only with `PremiumCheck`) |
+| Share | Copy Config Code, Import Config Code (see [Sharing configs](../state/flags-and-configs.md#sharing-configs)) |
 | Other | Unload UI (asks first) |
 
 The Configuration section only appears when the executor supports file functions.

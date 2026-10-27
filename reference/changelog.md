@@ -4,6 +4,22 @@ description: What changed in Sylex UI v2, and what to check when upgrading.
 
 # Changelog and upgrading
 
+## v2.2
+
+* **Locking:** `Element:Lock(reason)`, `Unlock()` and `IsLocked()`, plus the `Locked` / `LockReason` options. See [Locking and DependsOn](../elements/locking.md).
+* **DependsOn:** hide or lock an element until another flag has a value. `Library:OnFlagChanged` lets you listen to flags yourself.
+* **Freemium and Premium:** `Premium = true` on any element, plus `Library:SetPremium`, `IsPremium`, `GetTier` and `OnPremiumChanged`. See [Freemium and Premium](../state/premium.md).
+* **Premium from the Discord role:**
+  * Set `PremiumCheck` on the window.
+  * Players link once with **Link Discord** and `/link`.
+  * Re-checked every 30 seconds while the script is open (`PremiumRefresh`).
+  * Premium toggles switch off when Premium ends.
+* **Profile card:** the player's avatar, display name and tier at the bottom of the sidebar.
+* **Config codes:** `Library:ExportConfig()` / `ImportConfig()`, and a Share section in the settings tab.
+* **Debug mode:** `Debug = true` or `Library:SetDebug(true)`. See [Debug mode](debug-mode.md).
+* Two elements using the same flag now print a warning.
+* New [step-by-step guides](../guides/how-to.md) and a rewritten [full example](full-example.md).
+
 ## v2.1
 
 * `Midnight` is now a flat dark midnight blue, with no gradient.

@@ -9,7 +9,7 @@ description: What changed in Sylex UI v2, and what to check when upgrading.
 * `Midnight` is now a flat dark midnight blue, with no gradient.
 * Eight new themes: Onyx, Slate, Ocean, Emerald, Crimson, Rose, Amber and Mocha.
 * The theme dropdown is gone from the top bar. Players pick a theme in the settings tab.
-* The open button and the window title show the Sylex logo. Set `CloseUIButton.Image` or `Icon` to change them.
+* The open button and the window title always show the Sylex logo. The window `Icon` option is removed.
 
 ## v2
 

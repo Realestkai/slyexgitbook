@@ -34,7 +34,6 @@ Every option is optional.
 | --- | --- | --- | --- |
 | `Title` | string | `"null"` | Name shown in the top bar. |
 | `Desc` | string | `""` | Small subtitle under the title. |
-| `Icon` | string / number | `"sylex"` | The Sylex logo by default. Pass an icon name or an asset ID to use something else. |
 | `Theme` | string | `"Dark"` | Any [built-in theme](../customisation/themes.md) such as `"Midnight"`, or one added with `AddTheme`. |
 | `Search` | boolean | `false` | Adds a search box to the top of every tab. Tabs can override this. |
 | `Scale` | `"Auto"` / number | `"Auto"` | `"Auto"` shrinks the window to fit small screens such as phones. Pass a number like `0.8` for a fixed scale. |
@@ -55,10 +54,9 @@ Every option is optional.
 | Option | Type | Description |
 | --- | --- | --- |
 | `Enabled` | boolean | Show the button. |
-| `Image` | string / number / `false` | Image on the button. Defaults to the Sylex logo. Pass an asset ID to use your own, or `false` to show `Text` instead. |
-| `Text` | string | Label used when there's no image. Defaults to `"Open"`. |
+| `Text` | string | Fallback label, shown only if the logo can't load. Defaults to `"Open"`. |
 
-The Sylex logo is downloaded once and cached in `Sylex/assets`. On executors without `getcustomasset`, the button falls back to `Text`.
+The window title and the open button always show the Sylex logo; they can't be changed. The logo is downloaded once and cached in `Sylex/assets`. On executors without `getcustomasset`, the title shows a plain icon and the button shows `Text`.
 
 ## What the player can do
 
